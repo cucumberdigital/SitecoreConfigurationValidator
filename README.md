@@ -3,20 +3,20 @@ A tool designed to automate the updating of Sitecore server role configuration, 
 
 ###Options
 
--i
-Description: the physical path to the spreadsheet, provided by Sitecore
+* -i
+: Description: the physical path to the spreadsheet, provided by Sitecore
 Required
--w
+* -w
 Description: the physical path to the Website Root folder on the Sitecore base files
 Required
--r
+* -r
 Description: the Sitecore server role you would to validate the Sitecore base files against
 Required
--s
+* -s
 Description: the Search Provider that you are using
 Options: 'lucene' or 'solr'
 Default: 'lucene'
--v
+* -v
 Description: Verbose logging
 Note: Soon to be obsolete
 
