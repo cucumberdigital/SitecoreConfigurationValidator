@@ -70,14 +70,58 @@ namespace SitecoreConfigurationValidator
         {
             var sheet = _worksheets.First();
             var headerRowIndex = GetHeaderRowIndex();
+            var headerRowTestText = ConfigurationManager.AppSettings["Excel.HeaderRowTestText"];
 
+            Logger.Info("Config Header Row index: " + headerRowIndex);
             var headerRow = sheet.Rows[headerRowIndex];
 
+            var testRowIndex = 0;
+            var productNameTextFound = false;
+            
+            Logger.Info("Testing to find the text \"" + headerRowTestText + "\" in the Excel file starting at Row index: " + testRowIndex);
+            while (!productNameTextFound)
+            {
+                var testHeaderRow = sheet.Rows[testRowIndex];
+                if (testHeaderRow.Cells == null)
+                {
+                    testRowIndex++;
+                }
+                else
+                {
+                    foreach (var testHeaderRowCell in testHeaderRow.Cells)
+                    {
+                        if (testHeaderRowCell == null) continue;
+                        Logger.Info("Testing Header Row #" + testRowIndex + " Cell# " + testHeaderRowCell.ColumnIndex);
+
+                        if (testHeaderRowCell.Text == headerRowTestText)
+                        {
+                            productNameTextFound = true;
+                            Logger.Info("Text \"" + headerRowTestText + "\" found in  Row #" + testRowIndex + " Cell# " + testHeaderRowCell.ColumnIndex);
+                            Logger.Warning("Please update App.config Excel.HeaderRowIndex setting to " + testRowIndex + " if an error is thrown");
+                            break;
+                        }
+                    }
+
+                    if (!productNameTextFound)
+                    {
+                        testRowIndex++;
+                    }
+                }
+                
+            }
+
+            if (productNameTextFound)
+            {
+                headerRow = sheet.Rows[testRowIndex];
+            }
+
+            
             foreach (var role in SitecoreRoles)
             {
                 var roleHeaderRowCell = headerRow.Cells[role.ColumnIndex];
                 if (roleHeaderRowCell == null || roleHeaderRowCell.Text != role.Name)
                 {
+
                     Logger.Error("Invalid Role configuration - " + role.Name + " at cell #" + role.ColumnIndex);
                     return false;
                 }
